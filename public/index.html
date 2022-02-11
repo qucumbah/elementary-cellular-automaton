@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rule N</title>
+  <script src="./uiController.js" type="module"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <canvas id="mainCanvas"></canvas>
+  <div id="controlPanel">
+    <h1>Rule N</h1>
+    <div class="controlPanelSection">
+      <a href="https://en.wikipedia.org/wiki/Elementary_cellular_automaton">Info</a>
+    </div>
+    <div class="controlPanelSection">
+      <label for="ruleInput">N: <input type="number" id="ruleInput" value="110"></label>
+    </div>
+    <div class="controlPanelSection">
+      <label for="sizeInput">Size: <input type="number" id="sizeInput" value="1000"></label>
+    </div>
+    <div class="controlPanelSection">
+      <span>Zoom:
+        <button id="zoomPlus">+</button>
+        <button id="zoomPlus">-</button>
+        <button id="zoomPlus">Reset</button>
+      </span>
+    </div>
+    <div class="controlPanelSection">
+      <button id="generate">Generate</button>
+    </div>
+  </div>
+</body>
+</html>
