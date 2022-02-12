@@ -1,0 +1,23 @@
+{
+  "name": "wasm-text-projects",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build.js",
+  "scripts": {
+    "start": "nodemon start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://qucumbah@github.com/qucumbah/wasm-text-projects.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qucumbah/wasm-text-projects/issues"
+  },
+  "homepage": "https://github.com/qucumbah/wasm-text-projects#readme",
+  "dependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
