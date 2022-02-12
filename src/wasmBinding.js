@@ -1,26 +1,19 @@
-export async function executeRule(initialMemory, ruleNumber, size) {
-  const bytes = initialMemory.length;
-  const pages = Math.ceil(bytes / 1024 / 64);
-  const memory = new WebAssembly.Memory({ initial: pages });
+export async function executeRule(ruleNumber, width, height) {
+  const wasmInstance = await lazyWasmInstance;
 
-  for (let i = 0; i < initialMemory.length; i += 1) {
-    memory[i] = initialMemory[i];
-  }
-
-  const wasmInstance = await getWasm({
-    util: {
-      memory,
-    },
-  });
-
-  wasmInstance.exports.rule_n(ruleNumber, size);
-
-  return new Uint8Array(memory.buffer, 0, initialMemory.length);
+  wasmInstance.exports.rule_n(ruleNumber, width, height);
 }
+
+export const memory = new WebAssembly.Memory({ initial: 64 });
+
+let lazyWasmInstance = getWasm();
 
 async function getWasm(additionalImports) {
   const imports = {
     console,
+    util: {
+      memory,
+    },
     ...additionalImports,
   };
 

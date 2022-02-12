@@ -11,17 +11,19 @@ function updateCanvasSize() {
 window.addEventListener('resize', updateCanvasSize);
 updateCanvasSize();
 
-let memory;
-let size;
+const memory = new Uint8Array(wasmBinding.memory.buffer);
 
-const sizeInput = document.getElementById('sizeInput');
-function updateMemory() {
-  size = sizeInput.value;
-  memory = new Uint8Array(size * size);
-  memory[size - 1] = 1;
-  console.log(memory);
+let width;
+let height;
+
+const widthInput = document.getElementById('widthInput');
+const heightInput = document.getElementById('heightInput');
+function updateSize() {
+  width = widthInput.value;
+  height = heightInput.value;
 }
-sizeInput.addEventListener('change', updateMemory);
+widthInput.addEventListener('change', updateSize);
+heightInput.addEventListener('change', updateSize);
 
 let rule;
 
@@ -32,14 +34,24 @@ function updateRule() {
 ruleInput.addEventListener('change', updateRule);
 
 updateRule();
-updateMemory();
+updateSize();
+
+let initializationMethod = 'one';
+
+const initializationMethodInput = document.getElementById('initializationMethodInput');
+function updateInitializationMethod() {
+  initializationMethod = initializationMethodInput.value;
+}
+initializationMethodInput.addEventListener('change', updateInitializationMethod);
 
 async function generate() {
-  const newMemory = await wasmBinding.executeRule(memory, rule, size);
-  const imageData = ctx.createImageData(size, size);
+  initializeMemory();
+  await wasmBinding.executeRule(rule, width, height);
 
-  for (let i = 0; i < newMemory.length; i += 1) {
-    const intensity = (newMemory[i] === 0) ? 255 : 0;
+  const imageData = ctx.createImageData(width, height);
+
+  for (let i = 0; i < width * height; i += 1) {
+    const intensity = (memory[i] === 0) ? 255 : 0;
     imageData.data[i * 4 + 0] = intensity; // R
     imageData.data[i * 4 + 1] = intensity; // G
     imageData.data[i * 4 + 2] = intensity; // B
@@ -52,3 +64,24 @@ async function generate() {
 
 const generateButton = document.getElementById('generate');
 generateButton.addEventListener('click', generate);
+generate();
+
+// TODO: move this to WASM
+function initializeMemory() {
+  switch (initializationMethod) {
+    case 'one':
+      for (let i = 0; i < width - 1; i += 1) {
+        memory[i] = 0;
+      }
+      memory[width - 1] = 1;
+      break;
+    case 'random':
+      for (let i = 0; i < width; i += 1) {
+        memory[i] = (Math.random() > 0.5) ? 1 : 0;
+      }
+      break;
+    case 'manual':
+      // TODO: add manual initial condition setting
+      break;
+  }
+}

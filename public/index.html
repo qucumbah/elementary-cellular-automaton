@@ -19,7 +19,20 @@
       <label for="ruleInput">N: <input type="number" id="ruleInput" value="110"></label>
     </div>
     <div class="controlPanelSection">
-      <label for="sizeInput">Size: <input type="number" id="sizeInput" value="1000"></label>
+      <label for="initialConditionInput">
+        <div>Initialization method:</div>
+        <select id="initializationMethodInput">
+          <option value="one">One in the rightmost column</option>
+          <option value="random">Random values in all columns</option>
+          <option value="manual">Set values manually</option>
+        </select>
+      </label>
+    </div>
+    <div class="controlPanelSection">
+      <label for="widthInput">Width: <input type="number" id="widthInput" value="1000"></label>
+    </div>
+    <div class="controlPanelSection">
+      <label for="heightInput">Height: <input type="number" id="heightInput" value="1000"></label>
     </div>
     <div class="controlPanelSection">
       <span>Zoom:
