@@ -23,11 +23,20 @@ export default class Controller {
   constructor(model, view) {
     this.#model = model;
     this.#view = view;
-    this.#panZoomController = new PanZoomController({ panZoomHandler: this.#redraw.bind(this) });
+
+    this.#updateCanvasSize();
+    this.#boardWidthInput.value = this.#mainCanvas.width;
+    this.#boardHeightInput.value = this.#mainCanvas.height;
 
     this.#boardWidthInput.addEventListener('change', this.#updateBoardSize.bind(this));
     this.#boardHeightInput.addEventListener('change', this.#updateBoardSize.bind(this));
     this.#updateBoardSize();
+
+    this.#panZoomController = new PanZoomController({
+      panZoomHandler: this.#redraw.bind(this),
+      initialCenterX: this.#boardWidth / 2,
+      initialCenterY: this.#boardHeight / 2,
+    });
 
     this.#ruleInput.addEventListener('change', this.#updateRule.bind(this));
     this.#updateRule();
@@ -38,16 +47,19 @@ export default class Controller {
     this.#generateButton.addEventListener('click', this.#generateAndRedraw.bind(this));
     this.#generate(); // Initial generate
 
-    window.addEventListener('resize', this.#updateCanvasSize.bind(this));
-    this.#updateCanvasSize(); // Initial redraw
+    window.addEventListener('resize', this.#handleWindowResize.bind(this));
+    this.#handleWindowResize(); // Initial draw
+  }
+
+  #handleWindowResize() {
+    this.#updateCanvasSize();
+    this.#redraw();
   }
 
   #updateCanvasSize() {
     const canvasClientRect = this.#mainCanvas.getBoundingClientRect();
     this.#mainCanvas.width = canvasClientRect.width;
     this.#mainCanvas.height = canvasClientRect.height;
-
-    this.#redraw();
   }
 
   #updateBoardSize() {

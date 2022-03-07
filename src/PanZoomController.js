@@ -1,6 +1,10 @@
 export default class PanZoomController {
   #mainCanvas = document.getElementById('mainCanvas');
 
+  #zoomInButton = document.getElementById('zoomIn');
+  #zoomOutButton = document.getElementById('zoomOut');
+  #zoomResetButton = document.getElementById('zoomReset');
+
   #centerX = 0;
   #centerY = 0;
 
@@ -13,7 +17,9 @@ export default class PanZoomController {
   #panZoomHandler;
 
   constructor({
-    panZoomHandler
+    panZoomHandler,
+    initialCenterX,
+    initialCenterY,
   }) {
     // Drag can only be started on canvas
     this.#mainCanvas.addEventListener('mousedown', this.#handleMouseDown.bind(this));
@@ -24,7 +30,18 @@ export default class PanZoomController {
 
     this.#mainCanvas.addEventListener('wheel', this.#handleWheel.bind(this));
 
+    this.#zoomInButton.addEventListener('click', this.#changeZoom.bind(this, 0.9));
+    this.#zoomOutButton.addEventListener('click', this.#changeZoom.bind(this, 1.1));
+    this.#zoomResetButton.addEventListener('click', this.#resetZoom.bind(this));
+
     this.#panZoomHandler = panZoomHandler;
+
+    if (initialCenterX !== undefined) {
+      this.#centerX = initialCenterX;
+    }
+    if (initialCenterY !== undefined) {
+      this.#centerY = initialCenterY;
+    }
   }
 
   #handleMouseDown(event) {
@@ -65,7 +82,17 @@ export default class PanZoomController {
   }
 
   #handleWheel(event) {
-    this.#zoom = this.#zoom * (1 + event.deltaY / 500);
+    this.#changeZoom(1 + event.deltaY / 500);
+  }
+
+  #changeZoom(amount) {
+    this.#zoom = this.#zoom * amount;
+
+    this.#callPanZoomHandler();
+  }
+
+  #resetZoom() {
+    this.#zoom = 1;
 
     this.#callPanZoomHandler();
   }
