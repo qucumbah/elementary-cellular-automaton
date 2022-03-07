@@ -1,5 +1,5 @@
 export default class WasmBinding {
-  #wasmMemory = new WebAssembly.Memory({ initial: 64 });
+  #wasmMemory = new WebAssembly.Memory({ initial: 1024 });
 
   #exportMemory = new Uint8Array(this.#wasmMemory.buffer);
 
@@ -27,6 +27,10 @@ export default class WasmBinding {
 
   executeRule(ruleNumber, width, height) {
     this.#wasmInstance.exports.rule_n(ruleNumber, width, height);
+  }
+
+  renderToCanvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY) {
+    this.#wasmInstance.exports.render_to_canvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY);
   }
 
   getMemory() {

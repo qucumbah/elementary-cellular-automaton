@@ -5,7 +5,7 @@ import WasmBinding from './wasmBinding.js';
 
 async function main() {
   const wasmBinding = await WasmBinding.createInstance();
-  new Controller(new Model(wasmBinding), new View());
+  new Controller(new Model(wasmBinding), new View(wasmBinding));
 }
 
 main();

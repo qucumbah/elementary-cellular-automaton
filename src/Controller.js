@@ -91,7 +91,6 @@ export default class Controller {
 
   #redraw() {
     this.#view.redraw(
-      this.#model.getMemory(),
       this.#boardWidth,
       this.#boardHeight,
       this.#panZoomController.getPanZoom(),

@@ -197,4 +197,285 @@
       br_if $rows
     )
   )
+
+  ;; Function for checking if provided value v is in range [a; b)
+  (func $check_if_in_bounds
+    ;; Value
+    (param $v i32)
+    ;; Lower boundary (inclusive)
+    (param $a i32)
+    ;; Upper boundary (exclusive)
+    (param $b i32)
+    ;; Check result - boolean
+    (result i32)
+
+    ;; Check if v >= a
+    local.get $v
+    local.get $a
+    i32.ge_s
+
+    ;; Check if v < b
+    local.get $v
+    local.get $b
+    i32.lt_s
+
+    ;; Return (v >= a) && (v < b)
+    i32.and
+  )
+
+  ;; This creates imageData that can be put as an image to canvas
+  (func (export "render_to_canvas")
+    (param $board_width i32)
+    (param $board_height i32)
+    (param $canvas_width i32)
+    (param $canvas_height i32)
+    (param $center_x i32)
+    (param $center_y i32)
+    ;; (param $zoom f32)
+
+    ;; We render a rectangle that could be outside or inside of the board
+    ;; Need to store the extact boundaries of that board rectangle
+    (local $board_left i32)
+    (local $board_right i32)
+    (local $board_top i32)
+    (local $board_bottom i32)
+
+    ;; X and Y coordinates of current pixels of the image data
+    (local $x i32)
+    (local $y i32)
+
+    ;; X and Y coordinates of current pixels of the image data
+    (local $board_x i32)
+    (local $board_y i32)
+
+    ;; Canvas pixel color intensity
+    (local $intensity i32)
+
+    ;; Canvas pixel address
+    (local $pixel_address i32)
+
+    ;; Calculate board rectangle borders
+    
+    ;; board_left = center_x - canvas_width / 2 * zoom
+    local.get $center_x
+    local.get $canvas_width
+    ;; local.get $zoom
+    ;; i32.mul
+    i32.const 2
+    i32.div_s
+    i32.sub
+    local.set $board_left
+    
+    ;; board_right = center_x + canvas_width / 2 * zoom
+    local.get $center_x
+    local.get $canvas_width
+    ;; local.get $zoom
+    ;; i32.mul
+    i32.const 2
+    i32.div_s
+    i32.add
+    local.set $board_right
+    
+    ;; board_top = center_y - canvas_height / 2 * zoom
+    local.get $center_y
+    local.get $canvas_height
+    ;; local.get $zoom
+    ;; i32.mul
+    i32.const 2
+    i32.div_s
+    i32.sub
+    local.set $board_top
+    
+    ;; board_right = center_y + canvas_height / 2 * zoom
+    local.get $center_y
+    local.get $canvas_height
+    ;; local.get $zoom
+    ;; i32.mul
+    i32.const 2
+    i32.div_s
+    i32.add
+    local.set $board_bottom
+
+    ;; Put every pixel on canvas
+    ;; Iterate for y: 0..canvas_height
+    ;; Iterate for x: 0..canvas_width
+    i32.const 0
+    local.set $y
+    (loop $y_loop
+      i32.const 0
+      local.set $x
+      (loop $x_loop
+        ;; Main body of the loop
+
+        ;; Calculate board_x and board_y
+
+        ;; board_x = board_left + (board_right - board_left) * (x / canvas_width)
+        local.get $board_left
+        ;; board_right - board_left
+        local.get $board_right
+        local.get $board_left
+        i32.sub
+        ;; (board_right - board_left) * x
+        local.get $x
+        i32.mul
+        ;; (board_right - board_left) * x / canvas_width
+        local.get $canvas_width
+        i32.div_s
+        ;; board_left + (board_right - board_left) * (x / canvas_width)
+        i32.add
+        ;; Store board_x
+        local.set $board_x
+
+        ;; board_y = board_top + (board_bottom - board_top) * (y / canvas_height)
+        local.get $board_top
+        ;; board_bottom - board_top
+        local.get $board_bottom
+        local.get $board_top
+        i32.sub
+        ;; (board_bottom - board_top) * y
+        local.get $y
+        i32.mul
+        ;; (board_bottom - board_top) * y / canvas_height
+        local.get $canvas_height
+        i32.div_s
+        ;; board_top + (board_bottom - board_top) * (y / canvas_height)
+        i32.add
+        ;; Store board_y
+        local.set $board_y
+
+        ;; Color intensity:
+        ;; If cell coordinates are outside of the board: gray (100)
+        ;; If cell is empty: white (255)
+        ;; If cell is filled: black (0)
+
+        ;; Check if cell's X coordinate is inside the board
+        local.get $board_x
+        i32.const 0
+        local.get $board_width
+        call $check_if_in_bounds
+
+        ;; Check if cell's Y coordinate is inside the board
+        local.get $board_y
+        i32.const 0
+        local.get $board_height
+        call $check_if_in_bounds
+
+        ;; Check if cell's X or Y are inside the board
+        i32.or
+
+        ;; Calculate color intensity conditionally
+        (if
+          ;; If inside, check cell value
+          (then
+            ;; Get cell address
+            local.get $board_width
+            local.get $board_x
+            local.get $board_y
+            call $memaddr
+
+            ;; Get cell value
+            i32.load8_s
+
+            ;; If value is 0, intensity should be 255
+            ;; If value is 1, intensity should be 0
+            ;; Change 0 to 1 and 1 to 0: compare value to 0
+            i32.const 0
+            i32.eq
+            ;; Multiply this value by 255 to get the correct intensity
+            i32.const 255
+            i32.mul
+            local.set $intensity
+          )
+          ;; If outside, pixel color should be gray - intensity 100
+          (else
+            i32.const 100
+            local.set $intensity
+          )
+        )
+
+        ;; Memory map:
+        ;; [0; board_width*board_height) - this is where the generated board is stored
+        ;; [board_width*board_height; board_width*board_height + canvas_width*canvas_height*4) - this is where image data is stored
+
+        ;; Calculate image data pixel address:
+        ;; Image data is stored right after the board
+        ;; There are 4 bytes for each color
+        ;; i = board_width*board_height + (y * canvas_width + x) * 4
+        ;; board_width*board_height
+        local.get $board_width
+        local.get $board_height
+        i32.mul
+        ;; y * canvas_width + x
+        local.get $y
+        ;; call $debug
+        local.get $canvas_width
+        i32.mul
+        local.get $x
+        ;; call $debug
+        i32.add
+        ;; (y * canvas_width + x) * 4
+        i32.const 4
+        i32.mul
+        ;; board_width*board_height + (y * canvas_width + x) * 4
+        i32.add
+        ;; call $debug
+        ;; Store calculated pixel address
+        local.set $pixel_address
+
+        ;; Set R, G, B bytes to intensity
+        ;; R
+        local.get $pixel_address
+        local.get $intensity
+        i32.store8
+        ;; G
+        local.get $pixel_address
+        i32.const 1
+        i32.add
+        local.get $intensity
+        i32.store8
+        ;; B
+        local.get $pixel_address
+        i32.const 2
+        i32.add
+        local.get $intensity
+        i32.store8
+        ;; Set opacity byte to 255
+        local.get $pixel_address
+        i32.const 3
+        i32.add
+        i32.const 255
+        i32.store8
+
+        ;; End of main body of the loop
+
+        ;; x += 1
+        local.get $x
+        i32.const 1
+        i32.add
+        local.set $x
+
+        ;; Compare x to canvas_width
+        local.get $x
+        local.get $canvas_width
+
+        ;; Loop until x equals canvas_width
+        i32.ne
+        br_if $x_loop
+      )
+
+      ;; y += 1
+      local.get $y
+      i32.const 1
+      i32.add
+      local.set $y
+
+      ;; Compare y to canvas_height
+      local.get $y
+      local.get $canvas_height
+
+      ;; Loop until y equals canvas_height
+      i32.ne
+      br_if $y_loop
+    )
+  )
 )
