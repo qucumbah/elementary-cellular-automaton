@@ -30,9 +30,6 @@ export default class Model {
           this.#wasmMemory[i] = (Math.random() > 0.5) ? 1 : 0;
         }
         break;
-      case 'manual':
-        // No need to do anything if we initialize manually
-        break;
     }
   }
 
