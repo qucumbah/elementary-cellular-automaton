@@ -1,6 +1,9 @@
+import PanZoomController from './PanZoomController.js';
+
 export default class Controller {
   #model;
   #view;
+  #panZoomController;
 
   #mainCanvas = document.getElementById('mainCanvas');
 
@@ -20,6 +23,7 @@ export default class Controller {
   constructor(model, view) {
     this.#model = model;
     this.#view = view;
+    this.#panZoomController = new PanZoomController({ panZoomHandler: this.#redraw.bind(this) });
 
     this.#boardWidthInput.addEventListener('change', this.#updateBoardSize.bind(this));
     this.#boardHeightInput.addEventListener('change', this.#updateBoardSize.bind(this));
@@ -74,6 +78,11 @@ export default class Controller {
   }
 
   #redraw() {
-    this.#view.redraw(this.#model.getMemory(), this.#boardWidth, this.#boardHeight);
+    this.#view.redraw(
+      this.#model.getMemory(),
+      this.#boardWidth,
+      this.#boardHeight,
+      this.#panZoomController.getPanZoom(),
+    );
   }
 }
