@@ -27,9 +27,6 @@ export default class Controller {
     this.#updateCanvasSize();
     this.#boardWidthInput.value = this.#mainCanvas.width;
     this.#boardHeightInput.value = this.#mainCanvas.height;
-
-    this.#boardWidthInput.addEventListener('change', this.#updateBoardSize.bind(this));
-    this.#boardHeightInput.addEventListener('change', this.#updateBoardSize.bind(this));
     this.#updateBoardSize();
 
     this.#panZoomController = new PanZoomController({
@@ -81,6 +78,7 @@ export default class Controller {
   }
 
   #generate() {
+    this.#updateBoardSize();
     this.#model.generate({
       boardWidth: this.#boardWidth,
       boardHeight: this.#boardHeight,
