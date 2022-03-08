@@ -26,11 +26,12 @@ export default class View {
 
     // WASM memory map:
     // [0; board_width*board_height) - this is where the generated board is stored
-    // [board_width*board_height; board_width*board_height + canvas_width*canvas_height*4) - this is where image data is stored
+    // After the board comes image data:
+    // [board_width*board_height; board_width*board_height + canvas_width*canvas_height*4)
     const start = boardWidth * boardHeight;
     const length = canvasWidth * canvasHeight * 4;
-    const imageDataBuffer = this.#wasmMemory.slice(start, start + length);
-    const imageData = new ImageData(new Uint8ClampedArray(imageDataBuffer), canvasWidth, canvasHeight);
+    const imageDataBuffer = new Uint8ClampedArray(this.#wasmMemory.slice(start, start + length));
+    const imageData = new ImageData(imageDataBuffer, canvasWidth, canvasHeight);
     this.#ctx.putImageData(imageData, 0, 0);
   }
 }

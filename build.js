@@ -7,22 +7,22 @@ if (fs.existsSync('./dist')) {
 }
 fs.mkdirSync('./dist');
 
-for (const publicFile of fs.readdirSync('./public')) {
+fs.readdirSync('./public').forEach((publicFile) => {
   fs.copyFileSync(path.join('public', publicFile), path.join('dist', publicFile));
-}
+});
 
 const watFiles = [];
-for (const sourceFile of fs.readdirSync('./src')) {
+fs.readdirSync('./src').forEach((sourceFile) => {
   if (sourceFile.endsWith('wat')) {
     watFiles.push(sourceFile);
-    continue;
+    return;
   }
 
   fs.copyFileSync(path.join('src', sourceFile), path.join('dist', sourceFile));
-}
+});
 
-for (const watFile of watFiles) {
+watFiles.forEach((watFile) => {
   const fullWatPath = path.join('src', watFile);
-  const fullWasmPath = path.join('dist', watFile.slice(0, watFile.length - 'wat'.length) + 'wasm');
+  const fullWasmPath = path.join('dist', `${watFile.slice(0, watFile.length - 'wat'.length)}wasm`);
   cp.execSync(`wat2wasm ${fullWatPath} --output ${fullWasmPath}`);
-}
+});

@@ -5,9 +5,9 @@ export default class WasmBinding {
 
   #wasmInstance;
 
-  static _blockConstructor = true;
+  static #blockConstructor = true;
   constructor() {
-    if (WasmBinding._blockConstructor) {
+    if (WasmBinding.#blockConstructor) {
       throw new Error('Call WasmBinding.createInstance instead.');
     }
   }
@@ -17,9 +17,9 @@ export default class WasmBinding {
     // Instance of this class can only be created asynchronously
     // But there are no async constructors
     // Thus, we use async factory method
-    WasmBinding._blockConstructor = false;
+    WasmBinding.#blockConstructor = false;
     const instance = new WasmBinding();
-    WasmBinding._blockConstructor = true;
+    WasmBinding.#blockConstructor = true;
 
     instance.#wasmInstance = await instance.#getWasm();
     return instance;
@@ -30,7 +30,15 @@ export default class WasmBinding {
   }
 
   renderToCanvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY, zoom) {
-    this.#wasmInstance.exports.render_to_canvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY, zoom);
+    this.#wasmInstance.exports.render_to_canvas(
+      boardWidth,
+      boardHeight,
+      canvasWidth,
+      canvasHeight,
+      centerX,
+      centerY,
+      zoom,
+    );
   }
 
   getMemory() {

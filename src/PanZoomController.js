@@ -86,7 +86,7 @@ export default class PanZoomController {
   }
 
   #changeZoom(amount) {
-    this.#zoom = this.#zoom * amount;
+    this.#zoom *= amount;
 
     this.#callPanZoomHandler();
   }

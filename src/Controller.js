@@ -23,7 +23,9 @@ export default class Controller {
   constructor(model, view) {
     this.#model = model;
     this.#view = view;
+  }
 
+  run() {
     this.#updateCanvasSize();
     this.#boardWidthInput.value = this.#mainCanvas.width;
     this.#boardHeightInput.value = this.#mainCanvas.height;

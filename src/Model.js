@@ -30,6 +30,8 @@ export default class Model {
           this.#wasmMemory[i] = (Math.random() > 0.5) ? 1 : 0;
         }
         break;
+      default:
+        throw new Error(`Unknonw initialization method: ${initializationMethod}`);
     }
   }
 
