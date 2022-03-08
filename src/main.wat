@@ -234,7 +234,7 @@
     (param $canvas_height i32)
     (param $center_x i32)
     (param $center_y i32)
-    ;; (param $zoom f32)
+    (param $zoom f32)
 
     ;; We render a rectangle that could be outside or inside of the board
     ;; Need to store the extact boundaries of that board rectangle
@@ -262,40 +262,48 @@
     ;; board_left = center_x - canvas_width / 2 * zoom
     local.get $center_x
     local.get $canvas_width
-    ;; local.get $zoom
-    ;; i32.mul
-    i32.const 2
-    i32.div_s
+    f32.convert_i32_s
+    local.get $zoom
+    f32.mul
+    f32.const 2
+    f32.div
+    i32.trunc_f32_s
     i32.sub
     local.set $board_left
     
     ;; board_right = center_x + canvas_width / 2 * zoom
     local.get $center_x
     local.get $canvas_width
-    ;; local.get $zoom
-    ;; i32.mul
-    i32.const 2
-    i32.div_s
+    f32.convert_i32_s
+    local.get $zoom
+    f32.mul
+    f32.const 2
+    f32.div
+    i32.trunc_f32_s
     i32.add
     local.set $board_right
     
     ;; board_top = center_y - canvas_height / 2 * zoom
     local.get $center_y
     local.get $canvas_height
-    ;; local.get $zoom
-    ;; i32.mul
-    i32.const 2
-    i32.div_s
+    f32.convert_i32_s
+    local.get $zoom
+    f32.mul
+    f32.const 2
+    f32.div
+    i32.trunc_f32_s
     i32.sub
     local.set $board_top
     
-    ;; board_right = center_y + canvas_height / 2 * zoom
+    ;; board_bottom = center_y + canvas_height / 2 * zoom
     local.get $center_y
     local.get $canvas_height
-    ;; local.get $zoom
-    ;; i32.mul
-    i32.const 2
-    i32.div_s
+    f32.convert_i32_s
+    local.get $zoom
+    f32.mul
+    f32.const 2
+    f32.div
+    i32.trunc_f32_s
     i32.add
     local.set $board_bottom
 

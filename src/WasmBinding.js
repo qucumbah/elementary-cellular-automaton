@@ -29,8 +29,8 @@ export default class WasmBinding {
     this.#wasmInstance.exports.rule_n(ruleNumber, width, height);
   }
 
-  renderToCanvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY) {
-    this.#wasmInstance.exports.render_to_canvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY);
+  renderToCanvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY, zoom) {
+    this.#wasmInstance.exports.render_to_canvas(boardWidth, boardHeight, canvasWidth, canvasHeight, centerX, centerY, zoom);
   }
 
   getMemory() {

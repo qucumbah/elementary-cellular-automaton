@@ -21,6 +21,7 @@ export default class View {
       canvasHeight,
       panZoom.centerX,
       panZoom.centerY,
+      panZoom.zoom,
     );
 
     // WASM memory map:
