@@ -45,7 +45,8 @@ export default class Controller {
     this.#generate(); // Initial generate
 
     window.addEventListener('resize', this.#handleWindowResize.bind(this));
-    this.#handleWindowResize(); // Initial draw
+    this.#updateCanvasSize();
+    this.#redraw(); // Initial draw
   }
 
   #handleWindowResize() {

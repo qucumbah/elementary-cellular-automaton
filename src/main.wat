@@ -5,37 +5,6 @@
   ;; Console log for debugging
   (import "console" "log" (func $console_log (param i32)))
 
-  ;; Function to get cell address in memory
-  (func $memaddr
-    (param $width i32) ;; Board width; height does not affect calculations
-    (param $row i32)
-    (param $col i32)
-    (result i32)
-    ;; address = row * width + col
-    local.get $width
-    local.get $row
-    i32.mul
-    local.get $col
-    i32.add
-  )
-
-  ;; Convinience: duplicate current value on the stack
-  (func $dup
-    (param $value i32)
-    (result i32 i32)
-    local.get $value
-    local.get $value
-  )
-
-  ;; Convinience: log current value on the stack and put it back
-  (func $debug
-    (param $value i32)
-    (result i32)
-    local.get $value
-    call $console_log
-    local.get $value
-  )
-
   ;; Function to execute elementary cellular automaton with rule N
   (func (export "rule_n")
     ;; Rule number
@@ -199,31 +168,6 @@
       ;; Until not equal, keep looping
       br_if $rows
     )
-  )
-
-  ;; Function for checking if provided value v is in range [a; b)
-  (func $check_if_in_bounds
-    ;; Value
-    (param $v i32)
-    ;; Lower boundary (inclusive)
-    (param $a i32)
-    ;; Upper boundary (exclusive)
-    (param $b i32)
-    ;; Check result - boolean
-    (result i32)
-
-    ;; Check if v >= a
-    local.get $v
-    local.get $a
-    i32.ge_s
-
-    ;; Check if v < b
-    local.get $v
-    local.get $b
-    i32.lt_s
-
-    ;; Return (v >= a) && (v < b)
-    i32.and
   )
 
   ;; This creates imageData that can be put as an image to canvas
@@ -488,5 +432,61 @@
       i32.ne
       br_if $y_loop
     )
+  )
+
+  ;; Function to get cell address in memory
+  (func $memaddr
+    (param $width i32) ;; Board width; height does not affect calculations
+    (param $row i32)
+    (param $col i32)
+    (result i32)
+    ;; address = row * width + col
+    local.get $width
+    local.get $row
+    i32.mul
+    local.get $col
+    i32.add
+  )
+
+  ;; Convinience: duplicate current value on the stack
+  (func $dup
+    (param $value i32)
+    (result i32 i32)
+    local.get $value
+    local.get $value
+  )
+
+  ;; Convinience: log current value on the stack and put it back
+  (func $debug
+    (param $value i32)
+    (result i32)
+    local.get $value
+    call $console_log
+    local.get $value
+  )
+
+  ;; Function for checking if provided value v is in range [a; b)
+  (func $check_if_in_bounds
+    ;; Value
+    (param $v i32)
+    ;; Lower boundary (inclusive)
+    (param $a i32)
+    ;; Upper boundary (exclusive)
+    (param $b i32)
+    ;; Check result - boolean
+    (result i32)
+
+    ;; Check if v >= a
+    local.get $v
+    local.get $a
+    i32.ge_s
+
+    ;; Check if v < b
+    local.get $v
+    local.get $b
+    i32.lt_s
+
+    ;; Return (v >= a) && (v < b)
+    i32.and
   )
 )
