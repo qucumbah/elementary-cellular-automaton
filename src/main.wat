@@ -64,6 +64,9 @@
       ;; Get memory address
       local.get $width ;; Board width
       local.get $row ;; Row
+      ;; Subtract 1 since the cell is located on the previous row
+      i32.const 1
+      i32.sub
       i32.const 0 ;; Col
       call $memaddr
       ;; Read value from the current cell's memory address
@@ -360,8 +363,8 @@
         local.get $board_height
         call $check_if_in_bounds
 
-        ;; Check if cell's X or Y are inside the board
-        i32.or
+        ;; Check if cell's X and Y are inside the board
+        i32.and
 
         ;; Calculate color intensity conditionally
         (if
@@ -369,8 +372,8 @@
           (then
             ;; Get cell address
             local.get $board_width
-            local.get $board_x
             local.get $board_y
+            local.get $board_x
             call $memaddr
 
             ;; Get cell value
