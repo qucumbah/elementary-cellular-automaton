@@ -18,7 +18,7 @@ jobs:
         run: npm install
 
       - name: Install wabt
-        uses: chiefbiiko/setup-wabt@1.0.0
+        run: npm install -g wabt
 
       - name: Run lint
         run: npm run lint
